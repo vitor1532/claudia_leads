@@ -213,10 +213,23 @@ class Claudia:
                                 link = await listing.get_attribute('href')
 
                                 if title and title not in [l['Nome'] for l in all_leads]:
+                                    # Clica no item da lista para abrir o painel de detalhes
+                                    await listing.click()
+                                    await page.wait_for_timeout(1500)
+
+                                    # Tenta extrair o site oficial do estabelecimento no painel lateral
+                                    website_elem = await page.query_selector('a[data-item-id="authority"]')
+                                    website = await website_elem.get_attribute('href') if website_elem else None
+
+                                    has_site = "Sim" if website else "Não"
+                                    site_url = website if website else "N/A"
+
                                     all_leads.append({
                                         'Nome': title,
                                         'Categoria': keyword,
                                         'Cidade_Região': location,
+                                        'Possui_Site': has_site,
+                                        'Website': site_url,
                                         'Link_Maps': link,
                                         'Status_Inicial': 'Pendente Qualificação'
                                     })
